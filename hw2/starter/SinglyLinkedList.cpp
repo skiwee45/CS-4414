@@ -95,13 +95,65 @@ void SinglyLinkedList::printList() const
 // read city information to construct the Singly Linked list from the file at filename
 void SinglyLinkedList::loadFromCSV(const std::string &filename)
 {
-    /*** TODO: implement this */
+    // open file
+    std::ifstream
+        file(filename);
+    if (!file.is_open())
+    {
+        std::cerr << "Error opening file " << filename << std::endl;
+        return;
+    }
+
+    // read file line by line
+    std::string line;
+    std::getline(file, line); // skip the header line
+    while (std::getline(file, line))
+    {
+        std::stringstream ss(line);
+        std::string name, country, continent, population_2024_str, population_2023_str, growth_rate_str;
+
+        std::getline(ss, name, ',');
+        std::getline(ss, country, ',');
+        std::getline(ss, continent, ',');
+        std::getline(ss, population_2024_str, ',');
+        std::getline(ss, population_2023_str, ',');
+        std::getline(ss, growth_rate_str, ',');
+
+        long population_2024 = std::stol(population_2024_str);
+        long population_2023 = std::stol(population_2023_str);
+        double growth_rate = std::stod(growth_rate_str);
+
+        insertCity(name, country, continent, population_2024, population_2023, growth_rate);
+    }
 }
 
 // write city from start index to end index in the singly linked list to csv at filename
 void SinglyLinkedList::writeRangeOfCitiesToCSV(const std::string &filename, int start, int end) const
 {
-    /*** TODO: implement this */
+    // open file
+    std::ofstream
+        file(filename);
+    if (!file.is_open())
+    {
+        std::cerr << "Error opening file " << filename << std::endl;
+        return;
+    }
+
+    // write header
+    file << "City,Country,Continent,Population (2024),Population (2023),Growth Rate" << std::endl;
+
+    // write city information
+    std::shared_ptr<CityNode> current = head;
+    int i = 1;
+    while (current != nullptr && i < end)
+    {
+        if (i >= start)
+        {
+            file << current->name << "," << current->country << "," << current->continent << "," << current->population_2024 << "," << current->population_2023 << "," << current->growth_rate << std::endl;
+        }
+        current = current->next;
+        i++;
+    }
 }
 
 std::shared_ptr<CityNode> SinglyLinkedList::getFirstCity() const

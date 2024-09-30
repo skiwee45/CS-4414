@@ -1,5 +1,6 @@
 #include "SinglyLinkedList.hpp"
 #include <iostream>
+#include <cstring>
 
 int main(int argc, char *argv[])
 {
@@ -10,14 +11,35 @@ int main(int argc, char *argv[])
    * 3. write the output to the csv
    */
 
-  // for now just test the singly linked list
-  SinglyLinkedList list;
-  list.insertCity("Beijing", "China", "Asia", 27'058'480, 25'463'000, 0.027);
-  list.insertCity("Shanghai", "China", "Asia", 27'058'480, 26'317'104, 0.028);
-  list.insertCity("Istanbul", "Turkey", "Europe", 15'190'336, 14'798'000, 0.026);
-  list.insertCity("Karachi", "Pakistan", "Asia", 27'058'480, 20'463'000, 0.022);
+  std::string inputFile;
+  std::string outputFile;
+  int start = 0;
+  int end = 0;
 
+  for (int i = 1; i < argc; ++i)
+  {
+    if (strcmp(argv[i], "-i") == 0 && i + 1 < argc)
+    {
+      inputFile = argv[++i];
+    }
+    else if (strcmp(argv[i], "-o") == 0 && i + 1 < argc)
+    {
+      outputFile = argv[++i];
+    }
+    else if (strcmp(argv[i], "-s") == 0 && i + 1 < argc)
+    {
+      start = std::stoi(argv[++i]);
+    }
+    else if (strcmp(argv[i], "-e") == 0 && i + 1 < argc)
+    {
+      end = std::stoi(argv[++i]);
+    }
+  }
+
+  SinglyLinkedList list;
+  list.loadFromCSV(inputFile);
   list.printList();
+  list.writeRangeOfCitiesToCSV(outputFile, start, end);
 
   return 0;
 }
