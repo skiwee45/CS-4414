@@ -20,7 +20,7 @@ Animal::Animal(std::ifstream &file)
 
   std::getline(file, line);
   std::string dna;
-  extractLineData(line, dna, 3);
+  extractLineData(line, dna, 1);
 
   createGenes(dna);
 }
@@ -36,7 +36,7 @@ void Animal::extractLineData(const std::string &line, std::string &data, int num
 
   if (pos != std::string::npos)
   {
-    data = line.substr(pos + 2, line.size() - pos - numCharsAtEnd);
+    data = line.substr(pos + 2, line.size() - pos - numCharsAtEnd - 2);
   }
 }
 

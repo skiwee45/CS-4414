@@ -41,7 +41,7 @@ void updateAnimalGeneIds(std::set<Gene> &genes, std::vector<Animal> &animals)
 {
     for (auto &animal : animals)
     {
-        auto &animalGenes = animal.getGenes();
+        auto &animalGenes = animal.genes;
         for (std::size_t i = 0; i < animalGenes.size(); ++i)
         {
             auto &gene = animalGenes[i];
@@ -71,7 +71,7 @@ void printSpecies(std::vector<Animal> &animals)
     {
         std::cout << "S" << i++ << "=";
         std::cout << animal.getName() << ": Genes [";
-        auto genes = animal.getGenes();
+        auto genes = animal.genes;
         for (int j = 0; j < genes.size(); j++)
         {
             if (j == genes.size() - 1)
@@ -124,7 +124,7 @@ int main(int argc, char *argv[])
     std::set<Gene> allGenes;
     for (auto &animal : animals)
     {
-        for (const auto &gene : animal.getGenes())
+        for (const auto &gene : animal.genes)
         {
             allGenes.insert(gene);
         }
