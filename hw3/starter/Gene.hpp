@@ -12,6 +12,7 @@ public:
     bool operator==(const Gene &other) const;
     std::string gene;
     int id;
+    int distance(const Gene &other) const;
 
 private:
 };

@@ -20,6 +20,7 @@ public:
 
     void sortGenesById();
     bool operator<(const Animal &other) const; // friend allows this method to access Animal private members
+    bool isSibling(const Animal &other) const;
 
 private:
     std::string name;

@@ -2,9 +2,6 @@
 	"folders": [
 		{
 			"path": "../.."
-		},
-		{
-			"path": "../../../../../Downloads/wc++"
 		}
 	],
 	"settings": {
@@ -97,7 +94,8 @@
 			"__string": "cpp",
 			"chrono": "cpp",
 			"algorithm": "cpp",
-			"set": "cpp"
+			"set": "cpp",
+			"queue": "cpp"
 		}
 	}
 }

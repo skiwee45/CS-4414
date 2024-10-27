@@ -66,3 +66,20 @@ void Animal::sortGenesById()
 {
   std::sort(genes.begin(), genes.end(), compareGenesById);
 }
+
+bool Animal::isSibling(const Animal &other) const
+{
+  // if any gene is common, then the animals are siblings
+  for (const auto &gene : genes)
+  {
+    for (const auto &otherGene : other.genes)
+    {
+      if (gene.id == otherGene.id)
+      {
+        return true;
+      }
+    }
+  }
+
+  return false;
+}
