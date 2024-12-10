@@ -76,7 +76,17 @@
     "random": "cpp",
     "string_view": "cpp",
     "numbers": "cpp",
-    "variant": "cpp"
+    "variant": "cpp",
+    "map": "cpp",
+    "mutex": "cpp",
+    "regex": "cpp",
+    "stop_token": "cpp",
+    "thread": "cpp",
+    "xhash": "cpp",
+    "xtree": "cpp",
+    "bitset": "cpp",
+    "condition_variable": "cpp",
+    "semaphore": "cpp"
   },
   "cmake.sourceDirectory": "C:/Users/raymo/Documents/Github/CS-4414/hw4"
 }

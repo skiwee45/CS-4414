@@ -123,8 +123,19 @@ BigNum BigNum::intMult(int factor) const
   return revResult;
 }
 
+static std::vector<BigNum> getIntMultLookup(const BigNum &a)
+{
+  std::vector<BigNum> lookup;
+  for (int i = 0; i < 10; i++)
+  {
+    lookup.push_back(a.intMult(i));
+  }
+  return lookup;
+}
+
 BigNum BigNum::operator*(const BigNum &other) const
 {
+  std::vector<BigNum> lookup = getIntMultLookup(*this);
   BigNum revResult = BigNum();
   for (size_t i = 0; i < other.value.size(); i++)
   {
@@ -135,7 +146,7 @@ BigNum BigNum::operator*(const BigNum &other) const
       product.value.push_back(0);
     }
 
-    BigNum temp = this->intMult(other.value[i]);
+    BigNum temp = lookup[other.value[i]];
 
     for (int digit : temp.value)
     {
@@ -155,6 +166,9 @@ static std::tuple<BigNum, BigNum> divmod(const BigNum &a, const BigNum &b)
     std::cout << "Error: Divide by zero" << std::endl;
     return {BigNum("0"), a};
   }
+
+  std::vector<BigNum> lookup = getIntMultLookup(b);
+
   int i = a.value.size() - 1;
   BigNum revResult;
   std::vector<int> revCurrentValue;
@@ -181,6 +195,7 @@ static std::tuple<BigNum, BigNum> divmod(const BigNum &a, const BigNum &b)
       currentValue = currentValue - b;
       multiple++;
     }
+
     revCurrentValue = std::vector<int>(currentValue.value.rbegin(), currentValue.value.rend());
     revResult.value.push_back(multiple);
   }
@@ -215,10 +230,10 @@ BigNum BigNum::modExp(const BigNum &exp, const BigNum &mod) const
   BigNum result = BigNum("1");
   while (b > BigNum("0"))
   {
-    BigNum modded = b % BigNum("2");
-    b = b / BigNum("2");
+    auto [quotient, remainder] = divmod(b, BigNum("2"));
+    b = quotient;
 
-    if (modded == BigNum("1"))
+    if (remainder == BigNum("1"))
     {
       result = result * a % mod;
     }

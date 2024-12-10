@@ -18,6 +18,8 @@ public:
   BigNum(const std::string &stringValue);
   BigNum(std::vector<int> values) : value(values) {}
 
+  BigNum intMult(int integer) const;
+
   BigNum operator-(const BigNum &other) const;
   BigNum operator+(const BigNum &other) const;
   BigNum operator*(const BigNum &other) const;
@@ -37,7 +39,4 @@ public:
     os << num.toString();
     return os;
   }
-
-private:
-  BigNum intMult(int integer) const;
 };

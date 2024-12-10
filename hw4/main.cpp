@@ -7,6 +7,9 @@
 #include <chrono>
 #include <queue>
 #include "BigNum.hpp"
+#include <mutex>
+#include <thread>
+#include <atomic>
 
 bool checkArgs(int numArgs, char const *argv[])
 {
@@ -87,9 +90,11 @@ void encode()
 {
   std::string line;
 
+  int lineNum = 1;
+
   while (std::getline(std::cin, line))
   {
-    auto [line1, line2] = getLineCodes(line, 1);
+    auto [line1, line2] = getLineCodes(line, lineNum++);
 
     BigNum m = BigNum(line1);
     BigNum c = m.modExp(rsa_e, rsa_n);
@@ -113,27 +118,71 @@ std::string getStringFromCode(const std::string &code)
   return result;
 }
 
+void decodeLine(const std::string &line)
+{
+  BigNum c = BigNum(line);
+  BigNum m = c.modExp(rsa_d, rsa_n);
+  std::string coded_m = pad(m.toString(), 51 * 3, '0');
+  std::string m1 = getStringFromCode(coded_m).substr(3, 48);
+
+  std::cout << m1;
+}
+
 void decode()
 {
+  std::vector<std::string> lines;
   std::string line1;
 
   while (std::getline(std::cin, line1))
   {
     std::string line2;
     std::getline(std::cin, line2);
-    BigNum c = BigNum(line1);
-    BigNum m = c.modExp(rsa_d, rsa_n);
-    std::string coded_m = pad(m.toString(), 51 * 3, '0');
-    std::string m1 = getStringFromCode(coded_m).substr(3, 48);
+    lines.push_back(line1);
+    lines.push_back(line2);
+  }
 
-    c = BigNum(line2);
-    m = c.modExp(rsa_d, rsa_n);
-    coded_m = pad(m.toString(), 51 * 3, '0');
-    std::string m2 = getStringFromCode(coded_m).substr(0, 48);
-    std::string result = m1 + m2;
-    // trim end spaces
-    result.erase(result.find_last_not_of(' ') + 1);
-    std::cout << result << std::endl;
+  std::vector<std::string> decodedLines(lines.size());
+  std::atomic<int> globalLineNum = 0;
+  std::mutex mtx;
+
+  auto decodeLine = [&decodedLines, &mtx, &globalLineNum, &lines]()
+  {
+    int lineNum;
+    while ((lineNum = globalLineNum++) < lines.size())
+    {
+      auto line = lines[lineNum];
+      BigNum c = BigNum(line);
+      BigNum m = c.modExp(rsa_d, rsa_n);
+      std::string coded_m = pad(m.toString(), 51 * 3, '0');
+      int subStrStart = 0;
+      if (lineNum % 2 == 0)
+      {
+        subStrStart = 3;
+      }
+      std::string msg = getStringFromCode(coded_m).substr(subStrStart, 48);
+
+      std::scoped_lock lock(mtx);
+      decodedLines[lineNum] = msg;
+    }
+  };
+
+  std::vector<std::thread> threads;
+  int numThreads = 10;
+  for (size_t i = 0; i < numThreads; i++)
+  {
+    threads.push_back(std::thread(decodeLine));
+  }
+
+  for (auto &thread : threads)
+  {
+    thread.join();
+  }
+
+  for (size_t i = 0; i < lines.size() / 2; i++)
+  {
+    auto fullLine = decodedLines[i * 2] + decodedLines[i * 2 + 1];
+    fullLine.erase(fullLine.find_last_not_of(' ') + 1);
+    std::cout << fullLine << std::endl;
   }
 }
 
