@@ -63,6 +63,7 @@ GeneticTree::GeneticTree(const std::vector<std::vector<int>> &animalMatrix, cons
     if (parent[i] != -1)
     {
       allNodes[parent[i]]->children.push_back(allNodes[i]);
+      // std::cout << "Parent: " << allNodes[parent[i]]->root.getName() << " Child: " << allNodes[i]->root.getName() << "\n";
     }
   }
 

@@ -6,6 +6,7 @@
 #include <memory>
 #include <chrono>
 #include <queue>
+#include <string>
 #include "BigNum.hpp"
 
 BigNum::BigNum() : value(std::vector<int>()) {}
@@ -146,14 +147,15 @@ BigNum BigNum::operator*(const BigNum &other) const
 
   return revResult;
 }
-BigNum BigNum::operator/(const BigNum &other) const
+
+static std::tuple<BigNum, BigNum> divmod(const BigNum &a, const BigNum &b)
 {
-  if (other == BigNum("0"))
+  if (b == BigNum("0"))
   {
     std::cout << "Error: Divide by zero" << std::endl;
-    return BigNum("0");
+    return {BigNum("0"), a};
   }
-  int i = this->value.size() - 1;
+  int i = a.value.size() - 1;
   BigNum revResult;
   std::vector<int> revCurrentValue;
   while (i >= 0)
@@ -161,11 +163,11 @@ BigNum BigNum::operator/(const BigNum &other) const
     auto currentValue = BigNum(std::vector<int>(revCurrentValue.rbegin(), revCurrentValue.rend()));
     while (true)
     {
-      revCurrentValue.push_back(this->value[i]);
+      revCurrentValue.push_back(a.value[i]);
       currentValue = BigNum(std::vector<int>(revCurrentValue.rbegin(), revCurrentValue.rend()));
       i--;
 
-      if (currentValue < other && i >= 0)
+      if (currentValue < b && i >= 0)
       {
         revResult.value.push_back(0);
       }
@@ -174,9 +176,9 @@ BigNum BigNum::operator/(const BigNum &other) const
     }
 
     int multiple = 0;
-    while (other < currentValue || other == currentValue)
+    while (b < currentValue || b == currentValue)
     {
-      currentValue = currentValue - other;
+      currentValue = currentValue - b;
       multiple++;
     }
     revCurrentValue = std::vector<int>(currentValue.value.rbegin(), currentValue.value.rend());
@@ -184,16 +186,24 @@ BigNum BigNum::operator/(const BigNum &other) const
   }
 
   std::reverse(revResult.value.begin(), revResult.value.end());
+  std::reverse(revCurrentValue.begin(), revCurrentValue.end());
+  auto currentValue = BigNum(revCurrentValue);
 
   trim(revResult);
+  trim(currentValue);
 
-  return revResult;
+  return {revResult, currentValue};
+}
+BigNum BigNum::operator/(const BigNum &other) const
+{
+  auto [result, remainder] = divmod(*this, other);
+  return result;
 }
 
 BigNum BigNum::operator%(const BigNum &other) const
 {
-  BigNum factor = *this / other;
-  return *this - factor * (other);
+  auto [result, remainder] = divmod(*this, other);
+  return remainder;
 }
 
 BigNum BigNum::modExp(const BigNum &exp, const BigNum &mod) const
